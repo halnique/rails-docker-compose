@@ -1,0 +1,31 @@
+version: '3'
+services:
+  app:
+    image: ruby:latest
+    volumes:
+      - .:/app:cached
+    tty: true
+    depends_on:
+     - db
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - .:/var/www:cached
+      - ./docker/nginx/etc/nginx/conf.d:/etc/nginx/conf.d
+    ports:
+      - "8001:80"
+    depends_on:
+      - app
+  db:
+    image: mysql:5.7
+    volumes:
+      - mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+
+volumes:
+  mysql:
+    driver: local
